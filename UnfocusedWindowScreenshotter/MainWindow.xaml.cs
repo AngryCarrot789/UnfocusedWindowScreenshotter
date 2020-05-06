@@ -3,7 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using UnfocusedWindowScreenshotter.Applications;
 using UnfocusedWindowScreenshotter.Controls;
 using UnfocusedWindowScreenshotter.Screenshotting;
@@ -15,6 +18,8 @@ namespace UnfocusedWindowScreenshotter
     /// </summary>
     public partial class MainWindow : Window
     {
+        public bool IsCapturing { get; set; }
+        public int FPS { get; set; }
         public MainWindow()
         {
             InitializeComponent();
@@ -22,29 +27,83 @@ namespace UnfocusedWindowScreenshotter
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            IntPtr hWnd = GetSelectedAppHWND();
-            if (hWnd != IntPtr.Zero)
+            SelectedHWND = GetSelectedAppHWND();
+            if (SelectedHWND != IntPtr.Zero)
             {
-                Image desktopImage = Screenshotter.CaptureWindow(hWnd);
-                ImageBox.Source = BitmapConverters.ImageToBitmap(desktopImage);
+                Task.Run(() =>
+                {
+                    Image image = Screenshotter.CaptureWindow(SelectedHWND);
+                    OnFrameCaptured(image);
+                });
             }
+        }
+
+        private void capturingButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!IsCapturing)
+            {
+                capturingButton.Background = new SolidColorBrush(Colors.Red);
+                capturingButton.Content = "Stop Capturing";
+                IsCapturing = true;
+                BeginCapturing();
+            }
+            else
+            {
+                capturingButton.Background = new SolidColorBrush(Colors.Green);
+                capturingButton.Content = "Start Capturing";
+                StopCapturing();
+                IsCapturing = false;
+            }
+        }
+        private IntPtr SelectedHWND { get; set; }
+        public void BeginCapturing()
+        {
+            SelectedHWND = GetSelectedAppHWND();
+
+            Task.Run(async() =>
+            {
+                while (IsCapturing)
+                {
+                    if (SelectedHWND != IntPtr.Zero)
+                    {
+                        Image image = Screenshotter.CaptureWindow(SelectedHWND);
+                        OnFrameCaptured(image);
+                    }
+                    await Task.Delay(1000 / FPS);
+                }
+
+            });
+        }
+
+        public void StopCapturing()
+        {
+            SelectedHWND = IntPtr.Zero;
+        }
+
+        public void OnFrameCaptured(Image image)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                ImageBox.Source = BitmapConverters.ImageToBitmap(image);
+            });
         }
 
         private void refreshButton_Click(object sender, RoutedEventArgs e)
         {
+            ClearApplications();
             foreach (KeyValuePair<IntPtr, string> thing in ApplicationFetcher.GetOpenWindows())
             {
                 AddApplicationControl(thing);
             }
         }
 
+        private void FPSValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            FPS = Convert.ToInt32(e.NewValue);
+        }
+
         #region ApplicationControl Helpers
 
-        public void AddApplicationControl(Process process)
-        {
-            ApplicationControl ac = new ApplicationControl(process);
-            ApplicationSources.Items.Add(ac);
-        }
         public void AddApplicationControl(KeyValuePair<IntPtr, string> val)
         {
             ApplicationControl ac = new ApplicationControl(val.Key, val.Value);
@@ -62,15 +121,6 @@ namespace UnfocusedWindowScreenshotter
             return null;
         }
 
-        public Process GetSelectedAppProcess()
-        {
-            ApplicationControl ac = GetSelectedApplicationControl();
-            if (ac != null && ac.Process != null)
-            {
-                return ac.Process;
-            }
-            return null;
-        }
         public IntPtr GetSelectedAppHWND()
         {
             ApplicationControl ac = GetSelectedApplicationControl();
@@ -81,16 +131,10 @@ namespace UnfocusedWindowScreenshotter
             return IntPtr.Zero;
         }
 
-        public Process GetAppControlProcess(ApplicationControl ac)
-        {
-            return ac.Process;
-        }
-
         public void ClearApplications()
         {
             ApplicationSources.Items.Clear();
         }
-
         #endregion
     }
 }

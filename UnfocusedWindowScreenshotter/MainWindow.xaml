@@ -16,13 +16,17 @@
         </Grid>
         <Grid Height="62" VerticalAlignment="Bottom">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="5*"/>
-                <ColumnDefinition Width="10*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="4*"/>
             </Grid.ColumnDefinitions>
-            <Button Content="Capture" FontSize="20" Click="Button_Click" Margin="0,5,5,0"/>
-            <ComboBox x:Name="ApplicationSources" Margin="75,26,0,0" SelectedIndex="0" Grid.Column="1" FontSize="18" VerticalContentAlignment="Center"/>
-            <Button x:Name="refreshButton" Content="Refresh" Grid.Column="1" HorizontalAlignment="Left" Width="70" Margin="0,26,0,0" Click="refreshButton_Click"/>
-            <Label Content="Application/Programs Sources" Grid.Column="1" HorizontalAlignment="Center" Margin="5,0,0,0" VerticalAlignment="Top"/>
+            <Button x:Name="capturingButton" Content="Start Capturing" FontSize="16" Margin="0,29,5,0" Click="capturingButton_Click" Background="Lime"/>
+            <Button Content="Capture 1 frame" FontSize="16" Click="Button_Click" Margin="0,29,5,0" Grid.Column="1"/>
+            <ComboBox x:Name="ApplicationSources" Margin="75,29,0,0" SelectedIndex="0" Grid.Column="2" FontSize="18" VerticalContentAlignment="Center"/>
+            <Button x:Name="refreshButton" Content="Refresh" Grid.Column="2" HorizontalAlignment="Left" Width="70" Margin="0,29,0,0" Click="refreshButton_Click"/>
+            <Label Content="Application/Programs Sources" Grid.Column="2" HorizontalAlignment="Center" Margin="178,0,173,0" VerticalAlignment="Top"/>
+            <Slider ValueChanged="FPSValueChanged" IsSnapToTickEnabled="True" Value="10" Minimum="1" Maximum="60" VerticalAlignment="Top" SmallChange="1" TickPlacement="BottomRight" Grid.ColumnSpan="2" Margin="32,0,5,0"/>
+            <Label Content="FPS:" HorizontalAlignment="Left" VerticalAlignment="Top"/>
         </Grid>
     </Grid>
 </Window>

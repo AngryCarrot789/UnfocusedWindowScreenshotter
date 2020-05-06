@@ -7,6 +7,8 @@ namespace UnfocusedWindowScreenshotter.Applications
 {
     public static class ProcessesHelper
     {
+        // not using these anymore. scrapped processes and instead
+        // fetched only the windows using user32.dll (ApplicationFetcher.cs)
         public static List<Process> GetActiveApplications()
         {
             List<Process> _apps = new List<Process>();

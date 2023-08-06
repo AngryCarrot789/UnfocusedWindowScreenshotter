@@ -1,0 +1,32 @@
+﻿<Window x:Class="UnfocusedWindowScreenshotter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:UnfocusedWindowScreenshotter"
+        mc:Ignorable="d" Topmost="True"
+        Title="MainWindow" Height="548.498" Width="800">
+    <Grid Margin="5">
+        <Grid Margin="0,0,0,67">
+            <Viewbox>
+                <Border Width="160" Height="90" Background="#FFE8E8E8" BorderBrush="#FFAEAEAE" BorderThickness="1" CornerRadius="1">
+                    <Image x:Name="ImageBox"/>
+                </Border>
+            </Viewbox>
+        </Grid>
+        <Grid Height="62" VerticalAlignment="Bottom">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="capturingButton" Content="Start Capturing" FontSize="16" Margin="0,29,5,0" Click="capturingButton_Click" Background="Lime"/>
+            <Button Content="Capture 1 frame" FontSize="16" Click="Button_Click" Margin="0,29,5,0" Grid.Column="1"/>
+            <ComboBox x:Name="ApplicationSources" Margin="75,29,0,0" SelectedIndex="0" Grid.Column="2" FontSize="18" VerticalContentAlignment="Center"/>
+            <Button x:Name="refreshButton" Content="Refresh" Grid.Column="2" HorizontalAlignment="Left" Width="70" Margin="0,29,0,0" Click="refreshButton_Click"/>
+            <Label Content="Application/Programs Sources" Grid.Column="2" HorizontalAlignment="Center" Margin="178,0,173,0" VerticalAlignment="Top"/>
+            <Slider ValueChanged="FPSValueChanged" IsSnapToTickEnabled="True" Value="10" Minimum="1" Maximum="60" VerticalAlignment="Top" SmallChange="1" TickPlacement="BottomRight" Grid.ColumnSpan="2" Margin="32,0,5,0"/>
+            <Label Content="FPS:" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+        </Grid>
+    </Grid>
+</Window>
